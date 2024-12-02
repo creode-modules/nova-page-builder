@@ -4,6 +4,7 @@ namespace Creode\NovaPageBuilder\Nova\Fields;
 
 use Whitecube\NovaFlexibleContent\Flexible;
 use Creode\NovaPageBuilder\Events\PageContentEvent;
+use Whitecube\NovaFlexibleContent\Layouts\LayoutInterface;
 
 class PageBuilder extends Flexible
 {
@@ -24,12 +25,25 @@ class PageBuilder extends Flexible
     }
 
     /**
-     * {@inheritdoc}
+     * Fires an event to register new layouts.
      */
     protected function registerLayoutsFromEvent()
     {
         $pageContentEvent = new PageContentEvent($this);
         event($pageContentEvent);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function registerLayout(LayoutInterface $layout)
+    {
+        parent::registerLayout($layout);
+
+        // Sort the layouts alphabetically.
+        $this->layouts = $this->layouts->sort(function ($a, $b) {
+            return $a->title() <=> $b->title();
+        });
     }
 
     /**
